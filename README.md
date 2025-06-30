@@ -79,7 +79,7 @@ google-shotgrid-sheet-send-main/
 
 1. Open your Google Sheet
 2. Navigate to `Extensions > Apps Script`
-3. Copy over the JavaScript files from `google_appscript/`:
+3. Copy over the JavaScript (.gs) files from `google_appscript/`:
     - `menu.js` for the custom Sheet menu
     - `sendNotes.js`, `note_prep.js`, `util.js`, etc.
 4. Save the project and click **Deploy > Test deployments** or bind to your function endpoint.
