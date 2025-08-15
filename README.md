@@ -8,6 +8,8 @@ A lightweight integration that enables ShotGrid (SG) users—coordinators and pr
 
 Built with Firebase Cloud Functions (Python), the Shotgun API, and Google Apps Script.
 
+![send](https://bucket.camerontarget.com/sendtogoogle.png)
+
 ---
 
 ## Breakdown
