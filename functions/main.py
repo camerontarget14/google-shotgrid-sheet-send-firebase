@@ -8,9 +8,9 @@ from flask import Request, jsonify, redirect
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
-# -------------------
-#  Load Google Sheets & ShotGrid Credentials
-# -------------------
+"""
+Load Google Sheets & ShotGrid Credentials
+"""
 
 google_sheet_credentials_path = os.path.join(os.path.dirname(__file__), "willow.json")
 
@@ -27,9 +27,9 @@ try:
 except Exception as e:
     raise RuntimeError(f"Failed to authenticate credentials: {str(e)}")
 
-# -------------------
-#  Connect to ShotGrid
-# -------------------
+"""
+Connect to ShotGrid
+"""
 def get_shotgrid_connection():
     SHOTGUN_URL = "YOUR SHOTGRID WEBSITE URL"
     SCRIPT_NAME = "YOUR SCRIPT NAME ON SHOTGRID"
@@ -42,9 +42,9 @@ def get_shotgrid_connection():
         logging.error(f"Failed to connect to ShotGrid: {str(e)}")
         return None
 
-# -------------------
-#  Firebase Function for Syncing Notes to ShotGrid
-# -------------------
+"""
+Firebase Function for Syncing Notes to ShotGrid
+"""
 @https_fn.on_request()
 def sync_notes_to_shotgrid(request: Request):
     """Handler function that receives requests from Google Apps Script"""
@@ -101,9 +101,9 @@ def sync_notes_to_shotgrid(request: Request):
         logging.error(f"Error in sync_notes_to_shotgrid: {str(e)}")
         return jsonify({"error": f"Failed to process request: {str(e)}"}), 500
 
-# -------------------
-#  Firebase Function for Playlist to Sheets
-# -------------------
+"""
+Firebase Function for Playlist to Sheets
+"""
 @https_fn.on_request()
 def sync_playlist_to_google_sheets(request: Request):
     if request.method != "POST":
@@ -158,9 +158,9 @@ def sync_playlist_to_google_sheets(request: Request):
 
     template_sheet_id = "https://docs.google.com/spreadsheets/d/1MjhyLz6LmmsFQBFMFQj37srRK95ksbl91wiz3a0hNTY/edit?gid=426049621#gid=426049621"  # Hardcoded Sheet Template ID
 
-    # -------------------
-    #  Connect to ShotGrid
-    # -------------------
+    """
+    Connect to ShotGrid
+    """
     SHOTGUN_URL = "YOUR SG SITE URL"
     SCRIPT_NAME = "YOUR SG SCRIPT NAME"
     SCRIPT_KEY = sg_api_key  #  Use retrieved secret
@@ -170,9 +170,9 @@ def sync_playlist_to_google_sheets(request: Request):
     except Exception as e:
         return jsonify({"error": f"Failed to connect to ShotGrid: {str(e)}"}), 500
 
-    # -------------------
-    #  Find Playlist
-    # -------------------
+    """
+    Find Playlist
+    """
     try:
         playlist = sg.find_one("Playlist", [["id", "is", playlist_id]], ["code"])
         if not playlist:
@@ -181,9 +181,9 @@ def sync_playlist_to_google_sheets(request: Request):
     except Exception as e:
         return jsonify({"error": f"Error finding playlist: {str(e)}"}), 500
 
-    # -------------------
-    #  Find Project Frame Handles
-    # -------------------
+    """
+    Find Project Frame Handles
+    """
     try:
         project = sg.find_one("Project", [["name", "is", project_name]], ["sg_frame_handles"])
         project_frame_handles = project.get("sg_frame_handles") if project else None
@@ -192,9 +192,9 @@ def sync_playlist_to_google_sheets(request: Request):
         logging.error(f"Error finding project frame handles: {str(e)}")
         project_frame_handles = None
 
-    # -------------------
-    #  Find Versions with additional fields
-    # -------------------
+    """
+    Find Versions with additional fields
+    """
     filters = [
         ["playlists", "in", [{"type": "Playlist", "id": playlist_id}]],
         ["project.Project.name", "is", project_name]
@@ -212,9 +212,9 @@ def sync_playlist_to_google_sheets(request: Request):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    # -------------------
-    #  Clone Template and Create New Sheet
-    # -------------------
+    """
+    Clone Template and Create New Sheet
+    """
     try:
         drive_credentials = service_account.Credentials.from_service_account_file(
             google_sheet_credentials_path,
@@ -276,17 +276,17 @@ def sync_playlist_to_google_sheets(request: Request):
     except Exception as e:
         return jsonify({"error": f"Could not open or create sheets: {str(e)}"}), 500
 
-    # -------------------
-    #  Fetch & Sort Versions
-    # -------------------
+    """
+    Fetch & Sort Versions
+    """
 
     logging.info(f"ShotGrid Versions Data: {json.dumps(versions, indent=2)}")
 
     sorted_versions = sorted(versions, key=lambda x: x.get("sg_shot_code", ""))
 
-    # -------------------
-    #  Find Client Notes Using Shot Entities and Content Search
-    # -------------------
+    """
+    Find Client Notes Using Shot Entities and Content Search
+    """
 
     # Initialize empty mapping
     latest_notes_map = {}
@@ -369,9 +369,9 @@ def sync_playlist_to_google_sheets(request: Request):
         logging.error(f"Error in client notes processing: {str(e)}")
         # Continue with empty notes map
 
-    # -------------------
-    #  Sort & Prepare Data for Sheets
-    # -------------------
+    """
+    Sort & Prepare Data for Sheets
+    """
 
     try:
         # Prepare data for main submission sheet (with adjusted columns - removed column E)
@@ -475,15 +475,15 @@ def sync_playlist_to_google_sheets(request: Request):
         logging.error(f"Failed to update Google Sheets: {str(e)}")
         return jsonify({"error": f"Failed to update Google Sheets: {str(e)}"}), 500
 
-    # -------------------
-    #  Send Back URL
-    # -------------------
+    """
+    Send Back URL
+    """
     sheet_url = f"https://docs.google.com/spreadsheets/d/{new_sheet_id}"
     return redirect(sheet_url, code=302)
 
-    # -------------------
-    #  Send Notes to Flow
-    # -------------------
+    """
+    Send Notes to Flow
+    """
 
 def process_notes_sync(sg, spreadsheet_id, sheet_name, user_email):
     """
