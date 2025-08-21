@@ -1,6 +1,6 @@
 # ShotGrid ↔ Google Sheets Sync (Firebase)
 
-A lightweight integration that enables ShotGrid (SG) users—coordinators and production teams—to:
+A lightweight integration that enables ShotGrid (SG) users (coordinators and production teams) to:
 
 - Push shot/version data from SG to a Google Sheet
 - Collect artist feedback and notes in the sheet
